@@ -8,6 +8,8 @@ import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.net.http.SslError;
+import android.webkit.SslErrorHandler;
 import androidx.appcompat.app.AppCompatActivity;
 
 public class MainActivity extends AppCompatActivity {
@@ -25,9 +27,20 @@ public class MainActivity extends AppCompatActivity {
         webSettings.setDomStorageEnabled(true);
         webSettings.setLoadWithOverviewMode(true);
         webSettings.setUseWideViewPort(true);
+        webSettings.setDatabaseEnabled(true);
+        webSettings.setCacheMode(WebSettings.LOAD_DEFAULT);
         
-        // Ensure links open inside the WebView instead of external browser
-        myWebView.setWebViewClient(new WebViewClient());
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
+            webSettings.setMixedContentMode(WebSettings.MIXED_CONTENT_ALWAYS_ALLOW);
+        }
+        
+        // Ensure links open inside the WebView and handle SSL errors gracefully
+        myWebView.setWebViewClient(new WebViewClient() {
+            @Override
+            public void onReceivedSslError(WebView view, SslErrorHandler handler, SslError error) {
+                handler.proceed(); // Ignore SSL errors (e.g. from local proxy/network inspection)
+            }
+        });
         
         // Handle file uploads (image chooser) for HTML <input type="file">
         myWebView.setWebChromeClient(new WebChromeClient() {
