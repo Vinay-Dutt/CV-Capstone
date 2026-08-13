@@ -1,0 +1,92 @@
+{% extends "base.html" %}
+
+{% block title %}Help & FAQ - ICI Generator{% endblock %}
+
+{% block content %}
+<div class="container-fluid animate-fade-in">
+    <div class="glass-card mb-4 p-4">
+        <h3 class="fw-bold mb-2"><i class="fas fa-circle-question text-primary"></i> User Guide & Frequently Asked Questions</h3>
+        <p class="text-secondary m-0">Everything you need to know about operating the Image Complexity Index Generator.</p>
+    </div>
+
+    <!-- Step by Step Guide -->
+    <div class="glass-card mb-4">
+        <h5 class="card-title-lg"><i class="fas fa-list-check text-primary"></i> Step-by-Step Operating Guide</h5>
+        <div class="row g-4 mt-2">
+            <div class="col-md-3">
+                <div class="p-3 bg-light rounded text-center h-100">
+                    <span class="badge bg-primary fs-6 rounded-circle mb-2" style="width: 32px; height: 32px; line-height: 22px;">1</span>
+                    <h6 class="fw-bold">Upload Image</h6>
+                    <p class="small text-secondary mb-0">Drag and drop single or multiple JPG, PNG, BMP, or TIFF images in the uploader.</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="p-3 bg-light rounded text-center h-100">
+                    <span class="badge bg-primary fs-6 rounded-circle mb-2" style="width: 32px; height: 32px; line-height: 22px;">2</span>
+                    <h6 class="fw-bold">Preprocessing</h6>
+                    <p class="small text-secondary mb-0">The engine automatically resizes, converts to grayscale, reduces noise, and equalizes contrast.</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="p-3 bg-light rounded text-center h-100">
+                    <span class="badge bg-primary fs-6 rounded-circle mb-2" style="width: 32px; height: 32px; line-height: 22px;">3</span>
+                    <h6 class="fw-bold">Inspect Dashboard</h6>
+                    <p class="small text-secondary mb-0">Toggle between Canny Edge, Contour, GLCM texture metrics, and radar charts on the dashboard.</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="p-3 bg-light rounded text-center h-100">
+                    <span class="badge bg-primary fs-6 rounded-circle mb-2" style="width: 32px; height: 32px; line-height: 22px;">4</span>
+                    <h6 class="fw-bold">Export Reports</h6>
+                    <p class="small text-secondary mb-0">Download comprehensive academic PDF reports, Excel spreadsheets, or raw CSV rows.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Troubleshooting FAQ Accordion -->
+    <div class="glass-card mb-4">
+        <h5 class="card-title-lg"><i class="fas fa-wrench text-primary"></i> Frequently Asked Questions</h5>
+        <div class="accordion accordion-flush mt-3" id="faqAccordion">
+            <div class="accordion-item bg-transparent border-bottom">
+                <h2 class="accordion-header">
+                    <button class="accordion-button bg-transparent fw-semibold" type="button" data-bs-toggle="collapse" data-bs-target="#faq1">
+                        Why does the system rely strictly on classical CV instead of Machine Learning?
+                    </button>
+                </h2>
+                <div id="faq1" class="accordion-collapse collapse show" data-bs-parent="#faqAccordion">
+                    <div class="accordion-body text-secondary small">
+                        Classical Computer Vision algorithms (Canny, GLCM, Entropy) provide 100% deterministic, mathematically explainable metrics. Unlike deep learning black-box models, classical metrics offer full transparency into why an image receives a specific complexity score.
+                    </div>
+                </div>
+            </div>
+
+            <div class="accordion-item bg-transparent border-bottom">
+                <h2 class="accordion-header">
+                    <button class="accordion-button collapsed bg-transparent fw-semibold" type="button" data-bs-toggle="collapse" data-bs-target="#faq2">
+                        What image file formats and resolution limits are supported?
+                    </button>
+                </h2>
+                <div id="faq2" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                    <div class="accordion-body text-secondary small">
+                        Supported formats include JPG, JPEG, PNG, BMP, and TIFF. Images up to 32MB are accepted. High-resolution images are automatically scaled to a max dimension of 1024px to maintain fast real-time processing while preserving exact aspect ratios.
+                    </div>
+                </div>
+            </div>
+
+            <div class="accordion-item bg-transparent">
+                <h2 class="accordion-header">
+                    <button class="accordion-button collapsed bg-transparent fw-semibold" type="button" data-bs-toggle="collapse" data-bs-target="#faq3">
+                        How can I customize Canny Edge detection sensitivity?
+                    </button>
+                </h2>
+                <div id="faq3" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                    <div class="accordion-body text-secondary small">
+                        Expand the <strong>Advanced Classical CV Hyperparameters</strong> accordion on the Upload page. You can adjust Gaussian Blur kernel size (3x3 to 7x7) and modify Canny Low (10-150) and High (100-255) thresholds.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

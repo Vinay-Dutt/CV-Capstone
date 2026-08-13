@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+
+{% block title %}Methodology & Theory - ICI Generator{% endblock %}
+
+{% block content %}
+<div class="container-fluid animate-fade-in">
+    <!-- Header -->
+    <div class="glass-card mb-4 p-4" style="background: linear-gradient(135deg, rgba(99, 102, 241, 0.08) 0%, rgba(16, 185, 129, 0.08) 100%);">
+        <h2 class="fw-bold mb-2">Image Complexity Index (ICI) Methodology</h2>
+        <p class="lead text-secondary m-0">Theoretical Foundations, Mathematical Modeling, and Classical Computer Vision Architecture.</p>
+    </div>
+
+    <!-- Math & CV Foundations Grid -->
+    <div class="row g-4 mb-4">
+        <div class="col-lg-6">
+            <div class="glass-card h-100">
+                <h5 class="card-title-lg"><i class="fas fa-border-style text-primary"></i> 1. Structural & Edge Complexity</h5>
+                <p class="text-secondary">
+                    Sharp intensity transitions dictate human spatial perception of object boundaries. High edge pixel concentration directly correlates with visual clutter.
+                </p>
+                <div class="p-3 bg-light rounded border font-monospace small mb-3">
+                    Edge Density (D_edge) = Count(Canny_Pixels) / Total_Pixels
+                </div>
+                <p class="small text-muted">
+                    Contour topology counts discrete closed boundary loops and calculates total contour area ratio relative to the canvas.
+                </p>
+            </div>
+        </div>
+
+        <div class="col-lg-6">
+            <div class="glass-card h-100">
+                <h5 class="card-title-lg"><i class="fas fa-grip text-success"></i> 2. GLCM Texture Matrix</h5>
+                <p class="text-secondary">
+                    Gray-Level Co-occurrence Matrix (GLCM) computes spatial relationships between pairs of pixel gray levels at directions 0°, 45°, 90°, 135°.
+                </p>
+                <ul class="small text-secondary">
+                    <li><strong>Contrast:</strong> Measures local variations and spatial roughness.</li>
+                    <li><strong>Correlation:</strong> Linear dependence of gray levels across neighboring pixels.</li>
+                    <li><strong>Energy:</strong> Textural uniformity (squared sum of GLCM elements).</li>
+                    <li><strong>Homogeneity:</strong> Closeness of GLCM elements to matrix diagonal.</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="col-lg-6">
+            <div class="glass-card h-100">
+                <h5 class="card-title-lg"><i class="fas fa-circle-nodes text-info"></i> 3. Shannon Information Entropy</h5>
+                <p class="text-secondary">
+                    Derived from Information Theory, Shannon Entropy quantifies the average information content and randomness present in image pixel distributions.
+                </p>
+                <div class="p-3 bg-light rounded border font-monospace small mb-3">
+                    H = - ∑ [ p(i) * log2(p(i)) ]
+                </div>
+                <p class="small text-muted">
+                    Where p(i) represents the probability of pixel intensity gray level i appearing in the normalized histogram.
+                </p>
+            </div>
+        </div>
+
+        <div class="col-lg-6">
+            <div class="glass-card h-100">
+                <h5 class="card-title-lg"><i class="fas fa-calculator text-warning"></i> 4. ICI Mathematical Fusion Model</h5>
+                <p class="text-secondary">
+                    Features are mapped into normalized bounds [0, 100] via non-linear logarithmic scaling and integrated using a linear weighted sum model:
+                </p>
+                <div class="p-3 bg-light rounded border font-monospace small mb-3">
+                    ICI = w1*S_edge + w2*S_contour + w3*S_contrast + w4*S_glcm_ent + w5*S_entropy + w6*S_var
+                </div>
+                <p class="small text-muted">
+                    Sum of weights Σ w_k = 1.0. Final ICI is mapped to 5 complexity levels (Very Low, Low, Medium, High, Very High).
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

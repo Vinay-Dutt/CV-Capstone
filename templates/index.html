@@ -1,0 +1,197 @@
+{% extends "base.html" %}
+
+{% block title %}Home - Image Complexity Index Generator{% endblock %}
+
+{% block content %}
+<div class="container-fluid animate-fade-in">
+    <!-- Hero Banner -->
+    <div class="glass-card p-4 p-md-5 mb-4 position-relative overflow-hidden" style="background: linear-gradient(135deg, rgba(99, 102, 241, 0.08) 0%, rgba(6, 182, 212, 0.08) 100%);">
+        <div class="row align-items-center">
+            <div class="col-lg-8">
+                <span class="badge bg-primary px-3 py-2 rounded-pill mb-3">
+                    <i class="fas fa-microscope me-1"></i> Computer Science Engineering Capstone
+                </span>
+                <h1 class="display-5 fw-bold mb-3">
+                    Digital Image Complexity Assessment System
+                </h1>
+                <p class="lead text-secondary mb-4">
+                    Quantify, classify, and compare spatial, structural, and textural complexity in digital images using rigorous <strong>classical Computer Vision algorithms</strong> (Canny Edge Density, GLCM Matrices, Shannon Entropy, and Contour Topology).
+                </p>
+                <div class="d-flex flex-wrap gap-3">
+                    <a href="{{ url_for('upload_page') }}" class="btn btn-primary btn-lg rounded-pill px-4 shadow">
+                        <i class="fas fa-cloud-upload-alt me-2"></i> Single Image Assessment
+                    </a>
+                    <a href="{{ url_for('upload_page') }}?mode=batch" class="btn btn-outline-primary btn-lg rounded-pill px-4">
+                        <i class="fas fa-layer-group me-2"></i> Compare Multiple Images
+                    </a>
+                    <a href="{{ url_for('run_sample_demo') }}" class="btn btn-dark btn-lg rounded-pill px-4">
+                        <i class="fas fa-play me-2"></i> Run Synthetic Sample Demo
+                    </a>
+                </div>
+            </div>
+            <div class="col-lg-4 d-none d-lg-block text-center">
+                <i class="fas fa-brain-circuit" style="font-size: 11rem; opacity: 0.85; background: var(--accent-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent;"></i>
+            </div>
+        </div>
+    </div>
+
+    <!-- Statistics Overview Cards -->
+    <div class="row g-4 mb-4">
+        <div class="col-12 col-sm-6 col-xl-3">
+            <div class="glass-card stat-card">
+                <div>
+                    <p class="text-secondary small fw-semibold text-uppercase mb-1">Total Analyzed</p>
+                    <h3 class="fw-bold m-0">{{ stats.total_images }}</h3>
+                    <span class="small text-muted">Processed Images</span>
+                </div>
+                <div class="stat-icon">
+                    <i class="fas fa-images"></i>
+                </div>
+            </div>
+        </div>
+        <div class="col-12 col-sm-6 col-xl-3">
+            <div class="glass-card stat-card">
+                <div>
+                    <p class="text-secondary small fw-semibold text-uppercase mb-1">Average ICI</p>
+                    <h3 class="fw-bold m-0">{{ stats.avg_ici }} / 100</h3>
+                    <span class="small text-muted">Dataset Mean Score</span>
+                </div>
+                <div class="stat-icon" style="color: #10b981; background: rgba(16, 185, 129, 0.1);">
+                    <i class="fas fa-gauge-high"></i>
+                </div>
+            </div>
+        </div>
+        <div class="col-12 col-sm-6 col-xl-3">
+            <div class="glass-card stat-card">
+                <div>
+                    <p class="text-secondary small fw-semibold text-uppercase mb-1">Comparisons</p>
+                    <h3 class="fw-bold m-0">{{ stats.total_comparisons }}</h3>
+                    <span class="small text-muted">Multi-Image Runs</span>
+                </div>
+                <div class="stat-icon" style="color: #06b6d4; background: rgba(6, 182, 212, 0.1);">
+                    <i class="fas fa-code-compare"></i>
+                </div>
+            </div>
+        </div>
+        <div class="col-12 col-sm-6 col-xl-3">
+            <div class="glass-card stat-card">
+                <div>
+                    <p class="text-secondary small fw-semibold text-uppercase mb-1">Supported Formats</p>
+                    <h3 class="fw-bold m-0">5 Types</h3>
+                    <span class="small text-muted">JPG, PNG, BMP, TIFF, TIF</span>
+                </div>
+                <div class="stat-icon" style="color: #f59e0b; background: rgba(245, 158, 11, 0.1);">
+                    <i class="fas fa-file-image"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Classical Computer Vision Pipeline Highlights -->
+    <div class="row g-4 mb-4">
+        <div class="col-12">
+            <h4 class="card-title-lg">
+                <i class="fas fa-cubes text-primary"></i> Classical Computer Vision Module Pipeline
+            </h4>
+        </div>
+        <div class="col-md-6 col-lg-3">
+            <div class="glass-card h-100">
+                <div class="stat-icon mb-3">
+                    <i class="fas fa-sliders-h"></i>
+                </div>
+                <h5 class="fw-bold">1. Preprocessing</h5>
+                <p class="text-secondary small">
+                    Aspect-ratio preserved resizing, Grayscale mapping, Gaussian blurring, Median noise filtering, and CLAHE Adaptive Histogram Equalization.
+                </p>
+            </div>
+        </div>
+        <div class="col-md-6 col-lg-3">
+            <div class="glass-card h-100">
+                <div class="stat-icon mb-3" style="color: #10b981; background: rgba(16, 185, 129, 0.1);">
+                    <i class="fas fa-border-style"></i>
+                </div>
+                <h5 class="fw-bold">2. Feature Extraction</h5>
+                <p class="text-secondary small">
+                    Canny Edge density calculations, Contour topology mapping, GLCM Texture matrices (Contrast, Energy, Homogeneity), and Shannon Entropy metrics.
+                </p>
+            </div>
+        </div>
+        <div class="col-md-6 col-lg-3">
+            <div class="glass-card h-100">
+                <div class="stat-icon mb-3" style="color: #06b6d4; background: rgba(6, 182, 212, 0.1);">
+                    <i class="fas fa-calculator"></i>
+                </div>
+                <h5 class="fw-bold">3. ICI Mathematical Model</h5>
+                <p class="text-secondary small">
+                    Weighted feature fusion producing a normalized Image Complexity Index (0–100) and classification into 5 standardized levels.
+                </p>
+            </div>
+        </div>
+        <div class="col-md-6 col-lg-3">
+            <div class="glass-card h-100">
+                <div class="stat-icon mb-3" style="color: #f59e0b; background: rgba(245, 158, 11, 0.1);">
+                    <i class="fas fa-chart-pie"></i>
+                </div>
+                <h5 class="fw-bold">4. Analytics & Reports</h5>
+                <p class="text-secondary small">
+                    Dynamic Chart.js radar & bar visualizers, side-by-side comparative ranking, and automated PDF, CSV, and Excel assessment exports.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Analyses Section -->
+    {% if recent_analyses %}
+    <div class="glass-card mb-4">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h4 class="card-title-lg m-0">
+                <i class="fas fa-clock-rotate-left text-primary"></i> Recent Image Assessments
+            </h4>
+            <a href="{{ url_for('history_page') }}" class="btn btn-sm btn-outline-primary rounded-pill">
+                View Full History <i class="fas fa-arrow-right ms-1"></i>
+            </a>
+        </div>
+        <div class="table-responsive">
+            <table class="custom-table">
+                <thead>
+                    <tr>
+                        <th>Filename</th>
+                        <th>Upload Date</th>
+                        <th>Resolution</th>
+                        <th>Edge Density</th>
+                        <th>Entropy</th>
+                        <th>ICI Score</th>
+                        <th>Complexity Level</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in recent_analyses %}
+                    <tr>
+                        <td class="fw-semibold">
+                            <i class="fas fa-image me-2 text-primary"></i>{{ item.filename }}
+                        </td>
+                        <td class="small text-muted">{{ item.upload_date }}</td>
+                        <td class="small">{{ item.image_width }}x{{ item.image_height }}</td>
+                        <td>{{ "%.4f"|format(item.edge_density) }}</td>
+                        <td>{{ "%.3f"|format(item.shannon_entropy) }}</td>
+                        <td class="fw-bold text-primary">{{ "%.1f"|format(item.ici_score) }} / 100</td>
+                        <td>
+                            <span class="badge {{ item.complexity_level|lower|replace(' ', '-') }} px-3 py-2">
+                                {{ item.complexity_level }}
+                            </span>
+                        </td>
+                        <td>
+                            <a href="{{ url_for('dashboard_page') }}?id={{ item.analysis_id }}" class="btn btn-sm btn-primary rounded-pill">
+                                View Analysis
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

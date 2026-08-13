@@ -1,0 +1,271 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - Image Complexity Assessment{% endblock %}
+
+{% block content %}
+<div class="container-fluid animate-fade-in">
+    {% if not analysis %}
+    <!-- Empty State Prompt -->
+    <div class="glass-card text-center p-5 my-5">
+        <i class="fas fa-microscope text-primary mb-3" style="font-size: 4rem;"></i>
+        <h3>No Image Assessment Selected</h3>
+        <p class="text-secondary mb-4">Please upload an image or select a completed analysis from your processing history to inspect metrics.</p>
+        <div class="d-flex justify-content-center gap-3">
+            <a href="{{ url_for('upload_page') }}" class="btn btn-primary rounded-pill px-4">
+                <i class="fas fa-cloud-upload-alt me-2"></i> Upload New Image
+            </a>
+            <a href="{{ url_for('run_sample_demo') }}" class="btn btn-outline-primary rounded-pill px-4">
+                <i class="fas fa-bolt me-2"></i> Run Quick Demo
+            </a>
+        </div>
+    </div>
+    {% else %}
+
+    <!-- Top Action Bar -->
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 gap-3">
+        <div>
+            <h3 class="fw-bold m-0 d-flex align-items-center gap-2">
+                <i class="fas fa-chart-pie text-primary"></i> Analysis: {{ analysis.filename }}
+            </h3>
+            <span class="small text-muted">ID: {{ analysis.analysis_id }} • Uploaded: {{ analysis.upload_date }}</span>
+        </div>
+        <div class="d-flex flex-wrap gap-2">
+            <a href="{{ url_for('upload_page') }}" class="btn btn-outline-primary rounded-pill btn-sm">
+                <i class="fas fa-plus me-1"></i> New Upload
+            </a>
+            <a href="{{ url_for('comparison_page') }}" class="btn btn-outline-secondary rounded-pill btn-sm">
+                <i class="fas fa-code-compare me-1"></i> Compare Images
+            </a>
+            <div class="dropdown">
+                <button class="btn btn-primary rounded-pill btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                    <i class="fas fa-download me-1"></i> Export Report
+                </button>
+                <ul class="dropdown-menu dropdown-menu-end shadow">
+                    <li><a class="dropdown-item" href="{{ url_for('export_report', format_type='pdf', analysis_id=analysis.analysis_id) }}"><i class="fas fa-file-pdf text-danger me-2"></i> Download PDF Report</a></li>
+                    <li><a class="dropdown-item" href="{{ url_for('export_report', format_type='csv', analysis_id=analysis.analysis_id) }}"><i class="fas fa-file-csv text-success me-2"></i> Download CSV Data</a></li>
+                    <li><a class="dropdown-item" href="{{ url_for('export_report', format_type='excel', analysis_id=analysis.analysis_id) }}"><i class="fas fa-file-excel text-primary me-2"></i> Download Excel Workbook</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Grid Layout -->
+    <div class="row g-4 mb-4">
+        <!-- Left Column: Visual Map Viewers -->
+        <div class="col-lg-7">
+            <div class="glass-card h-100">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h5 class="card-title-lg m-0"><i class="fas fa-eye text-primary"></i> Vision Feature Layer Inspection</h5>
+                    <span class="badge bg-secondary">{{ analysis.image_width }} x {{ analysis.image_height }} px</span>
+                </div>
+
+                <!-- Nav Tabs for Image Processing Layers -->
+                <ul class="nav nav-pills mb-3 gap-2" id="visionMapTabs" role="tablist">
+                    <li class="nav-item">
+                        <button class="nav-link active rounded-pill btn-sm" id="orig-tab" data-bs-toggle="tab" data-bs-target="#orig-pane">
+                            Original BGR
+                        </button>
+                    </li>
+                    <li class="nav-item">
+                        <button class="nav-link rounded-pill btn-sm" id="proc-tab" data-bs-toggle="tab" data-bs-target="#proc-pane">
+                            Preprocessed
+                        </button>
+                    </li>
+                    <li class="nav-item">
+                        <button class="nav-link rounded-pill btn-sm" id="edge-tab" data-bs-toggle="tab" data-bs-target="#edge-pane">
+                            Canny Edge Map
+                        </button>
+                    </li>
+                    <li class="nav-item">
+                        <button class="nav-link rounded-pill btn-sm" id="contour-tab" data-bs-toggle="tab" data-bs-target="#contour-pane">
+                            Contour Overlay
+                        </button>
+                    </li>
+                </ul>
+
+                <div class="tab-content" id="visionMapTabContent">
+                    <div class="tab-pane fade show active" id="orig-pane">
+                        <div class="tab-img-container">
+                            <img src="{{ url_for('serve_file', filename=analysis.original_filepath) }}" alt="Original Image">
+                        </div>
+                    </div>
+                    <div class="tab-pane fade" id="proc-pane">
+                        <div class="tab-img-container">
+                            <img src="{{ url_for('serve_file', filename=analysis.processed_filepath) }}" alt="Processed Image">
+                        </div>
+                    </div>
+                    <div class="tab-pane fade" id="edge-pane">
+                        <div class="tab-img-container">
+                            <img src="{{ url_for('serve_file', filename=analysis.edge_filepath) }}" alt="Canny Edges">
+                        </div>
+                    </div>
+                    <div class="tab-pane fade" id="contour-pane">
+                        <div class="tab-img-container">
+                            <img src="{{ url_for('serve_file', filename=analysis.contour_filepath) }}" alt="Contour Topology">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Column: ICI Score Gauge & Level -->
+        <div class="col-lg-5">
+            <div class="glass-card h-100 d-flex flex-column justify-content-between">
+                <div>
+                    <h5 class="card-title-lg mb-2"><i class="fas fa-gauge-high text-primary"></i> Image Complexity Index (ICI)</h5>
+                    <p class="text-secondary small">Classical computer vision multi-feature weighted fusion score.</p>
+                </div>
+
+                <div class="ici-meter-box my-auto">
+                    <div style="height: 180px; position: relative;">
+                        <canvas id="iciGaugeCanvas"></canvas>
+                        <div class="position-absolute top-50 start-50 translate-middle text-center">
+                            <div class="meter-score-display">{{ "%.1f"|format(analysis.ici_score) }}</div>
+                            <span class="small text-muted fw-bold">SCORE (0 - 100)</span>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-3">
+                        <span class="complexity-badge-lg text-white" style="background-color: {{ score_result.color_hex if score_result else '#4f46e5' }};">
+                            {{ analysis.complexity_level }} Complexity
+                        </span>
+                    </div>
+                </div>
+
+                <!-- Sub-score Breakdown -->
+                <div class="row g-2 pt-3 border-top mt-3">
+                    <div class="col-4 text-center">
+                        <span class="small text-muted d-block">Spatial</span>
+                        <strong class="text-primary">{{ score_result.sub_scores.spatial_structural if score_result else 0.0 }}</strong>
+                    </div>
+                    <div class="col-4 text-center">
+                        <span class="small text-muted d-block">Texture</span>
+                        <strong class="text-success">{{ score_result.sub_scores.texture_glcm if score_result else 0.0 }}</strong>
+                    </div>
+                    <div class="col-4 text-center">
+                        <span class="small text-muted d-block">Entropy</span>
+                        <strong class="text-info">{{ score_result.sub_scores.information_entropy if score_result else 0.0 }}</strong>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Charts Row -->
+    <div class="row g-4 mb-4">
+        <div class="col-lg-6">
+            <div class="glass-card">
+                <h5 class="card-title-lg"><i class="fas fa-project-diagram text-primary"></i> Feature Distribution Radar</h5>
+                <div style="height: 300px;">
+                    <canvas id="radarChartCanvas"></canvas>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-6">
+            <div class="glass-card">
+                <h5 class="card-title-lg"><i class="fas fa-chart-column text-primary"></i> Sub-domain Complexity Breakdown</h5>
+                <div style="height: 300px;">
+                    <canvas id="barChartCanvas"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Feature Metrics Table -->
+    <div class="glass-card mb-4">
+        <h5 class="card-title-lg mb-3"><i class="fas fa-table text-primary"></i> Extracted Computer Vision Feature Table</h5>
+        <div class="table-responsive">
+            <table class="custom-table">
+                <thead>
+                    <tr>
+                        <th>Category</th>
+                        <th>Feature Metric Name</th>
+                        <th>Extracted Numerical Value</th>
+                        <th>Interpretation & Impact</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><span class="badge bg-primary">Structural</span></td>
+                        <td class="fw-semibold">Canny Edge Density</td>
+                        <td class="font-monospace fw-bold">{{ "%.5f"|format(analysis.edge_density) }}</td>
+                        <td class="small text-secondary">Ratio of sharp boundary pixels to total image area. Higher density indicates intricate details.</td>
+                    </tr>
+                    <tr>
+                        <td><span class="badge bg-primary">Structural</span></td>
+                        <td class="fw-semibold">Contour Count</td>
+                        <td class="font-monospace fw-bold">{{ analysis.contour_count }}</td>
+                        <td class="small text-secondary">Total count of discrete topological object outlines detected.</td>
+                    </tr>
+                    <tr>
+                        <td><span class="badge bg-primary">Structural</span></td>
+                        <td class="fw-semibold">Contour Area Ratio</td>
+                        <td class="font-monospace fw-bold">{{ "%.5f"|format(analysis.contour_area_ratio) }}</td>
+                        <td class="small text-secondary">Proportion of canvas area covered by object contours.</td>
+                    </tr>
+                    <tr>
+                        <td><span class="badge bg-success">GLCM Texture</span></td>
+                        <td class="fw-semibold">GLCM Contrast</td>
+                        <td class="font-monospace fw-bold">{{ "%.4f"|format(analysis.glcm_contrast) }}</td>
+                        <td class="small text-secondary">Measures local intensity variations and spatial texture roughness.</td>
+                    </tr>
+                    <tr>
+                        <td><span class="badge bg-success">GLCM Texture</span></td>
+                        <td class="fw-semibold">GLCM Correlation</td>
+                        <td class="font-monospace fw-bold">{{ "%.4f"|format(analysis.glcm_correlation) }}</td>
+                        <td class="small text-secondary">Measures linear dependence of gray levels between neighboring pixels.</td>
+                    </tr>
+                    <tr>
+                        <td><span class="badge bg-success">GLCM Texture</span></td>
+                        <td class="fw-semibold">GLCM Energy</td>
+                        <td class="font-monospace fw-bold">{{ "%.4f"|format(analysis.glcm_energy) }}</td>
+                        <td class="small text-secondary">Sum of squared elements in GLCM; reflects textural uniformity.</td>
+                    </tr>
+                    <tr>
+                        <td><span class="badge bg-success">GLCM Texture</span></td>
+                        <td class="fw-semibold">GLCM Homogeneity</td>
+                        <td class="font-monospace fw-bold">{{ "%.4f"|format(analysis.glcm_homogeneity) }}</td>
+                        <td class="small text-secondary">Closeness of GLCM element distribution to matrix diagonal.</td>
+                    </tr>
+                    <tr>
+                        <td><span class="badge bg-info">Information</span></td>
+                        <td class="fw-semibold">Shannon Entropy</td>
+                        <td class="font-monospace fw-bold">{{ "%.4f"|format(analysis.shannon_entropy) }} bits/px</td>
+                        <td class="small text-secondary">Quantifies information randomness and pixel state unpredictability.</td>
+                    </tr>
+                    <tr>
+                        <td><span class="badge bg-secondary">Statistical</span></td>
+                        <td class="fw-semibold">Intensity Mean & Variance</td>
+                        <td class="font-monospace fw-bold">μ={{ "%.1f"|format(analysis.intensity_mean) }}, σ²={{ "%.1f"|format(analysis.intensity_variance) }}</td>
+                        <td class="small text-secondary">First and second order intensity statistics across image canvas.</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block extra_js %}
+{% if analysis %}
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const subScores = {
+            s_edge: {{ score_result.sub_scores.s_edge if score_result else 0.0 }},
+            s_contour: {{ score_result.sub_scores.s_contour if score_result else 0.0 }},
+            s_contrast: {{ score_result.sub_scores.s_contrast if score_result else 0.0 }},
+            s_entropy: {{ score_result.sub_scores.s_entropy if score_result else 0.0 }},
+            s_var: {{ score_result.sub_scores.s_var if score_result else 0.0 }},
+            spatial_structural: {{ score_result.sub_scores.spatial_structural if score_result else 0.0 }},
+            texture_glcm: {{ score_result.sub_scores.texture_glcm if score_result else 0.0 }},
+            information_entropy: {{ score_result.sub_scores.information_entropy if score_result else 0.0 }}
+        };
+        
+        ChartManager.renderGaugeChart('iciGaugeCanvas', {{ analysis.ici_score }}, '{{ score_result.color_hex if score_result else "#4f46e5" }}');
+        ChartManager.renderRadarChart('radarChartCanvas', subScores);
+        ChartManager.renderSubScoreBarChart('barChartCanvas', subScores);
+    });
+</script>
+{% endif %}
+{% endblock %}

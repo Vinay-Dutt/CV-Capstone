@@ -1,0 +1,128 @@
+{% extends "base.html" %}
+
+{% block title %}Image Comparison & Ranking - ICI Generator{% endblock %}
+
+{% block content %}
+<div class="container-fluid animate-fade-in">
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 gap-3">
+        <div>
+            <h3 class="fw-bold m-0"><i class="fas fa-code-compare text-primary"></i> Multi-Image Complexity Comparison</h3>
+            <p class="text-secondary small m-0">Rank multiple digital images side-by-side based on classical computer vision metrics.</p>
+        </div>
+        <a href="{{ url_for('upload_page') }}" class="btn btn-primary rounded-pill btn-sm">
+            <i class="fas fa-plus me-1"></i> Upload New Batch
+        </a>
+    </div>
+
+    {% if not comparison %}
+    <!-- Select Comparison Prompt -->
+    <div class="glass-card text-center p-5 my-4">
+        <i class="fas fa-layer-group text-primary mb-3" style="font-size: 3.5rem;"></i>
+        <h4>No Comparison Batch Selected</h4>
+        <p class="text-secondary mb-4">Please upload two or more images together in the uploader to generate a comparison matrix and ranking.</p>
+        <a href="{{ url_for('upload_page') }}" class="btn btn-primary rounded-pill px-4">
+            <i class="fas fa-cloud-upload-alt me-2"></i> Go to Multi-Upload
+        </a>
+    </div>
+    {% else %}
+
+    <!-- Extrema Summary Cards (Highest vs Lowest) -->
+    <div class="row g-4 mb-4">
+        <div class="col-md-6">
+            <div class="glass-card border-danger h-100" style="border-left: 6px solid #dc3545 !important;">
+                <span class="badge bg-danger mb-2"><i class="fas fa-fire me-1"></i> Highest Complexity Extrema</span>
+                <h5 class="fw-bold">{{ comparison.highest_complexity.filename }}</h5>
+                <div class="d-flex align-items-center gap-3 mt-3">
+                    <div class="image-preview-wrapper" style="width: 100px; height: 100px;">
+                        <img src="{{ url_for('serve_file', filename=comparison.highest_complexity.filepath) }}" alt="Highest">
+                    </div>
+                    <div>
+                        <h2 class="fw-bold text-danger m-0">{{ "%.1f"|format(comparison.highest_complexity.ici_score) }} / 100</h2>
+                        <span class="badge bg-dark mt-1">{{ comparison.highest_complexity.complexity_level }}</span>
+                        <p class="small text-muted mb-0 mt-2">Rank #1 in Batch</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="glass-card border-info h-100" style="border-left: 6px solid #0dcaf0 !important;">
+                <span class="badge bg-info text-dark mb-2"><i class="fas fa-feather me-1"></i> Lowest Complexity Extrema</span>
+                <h5 class="fw-bold">{{ comparison.lowest_complexity.filename }}</h5>
+                <div class="d-flex align-items-center gap-3 mt-3">
+                    <div class="image-preview-wrapper" style="width: 100px; height: 100px;">
+                        <img src="{{ url_for('serve_file', filename=comparison.lowest_complexity.filepath) }}" alt="Lowest">
+                    </div>
+                    <div>
+                        <h2 class="fw-bold text-info m-0">{{ "%.1f"|format(comparison.lowest_complexity.ici_score) }} / 100</h2>
+                        <span class="badge bg-info text-dark mt-1">{{ comparison.lowest_complexity.complexity_level }}</span>
+                        <p class="small text-muted mb-0 mt-2">Rank #{{ comparison.count }} in Batch</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Comparative Ranking Table -->
+    <div class="glass-card mb-4">
+        <h5 class="card-title-lg mb-3"><i class="fas fa-trophy text-primary"></i> Image Complexity Ranking Matrix</h5>
+        <div class="table-responsive">
+            <table class="custom-table">
+                <thead>
+                    <tr>
+                        <th>Rank</th>
+                        <th>Image Thumbnail</th>
+                        <th>Filename</th>
+                        <th>Edge Density</th>
+                        <th>Shannon Entropy</th>
+                        <th>GLCM Contrast</th>
+                        <th>ICI Score</th>
+                        <th>Complexity Level</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in comparison.ranked_images %}
+                    <tr>
+                        <td>
+                            {% if item.rank == 1 %}
+                                <span class="rank-badge-gold"><i class="fas fa-crown me-1"></i> 1st</span>
+                            {% elif item.rank == 2 %}
+                                <span class="rank-badge-silver">2nd</span>
+                            {% else %}
+                                <span class="badge bg-secondary rounded-circle px-3 py-2">{{ item.rank }}th</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <div class="image-preview-wrapper" style="width: 60px; height: 50px;">
+                                <img src="{{ url_for('serve_file', filename=item.filepath) }}" alt="Thumb">
+                            </div>
+                        </td>
+                        <td class="fw-semibold">{{ item.filename }}</td>
+                        <td>{{ "%.4f"|format(item.features.edge_density) }}</td>
+                        <td>{{ "%.3f"|format(item.features.shannon_entropy) }}</td>
+                        <td>{{ "%.3f"|format(item.features.glcm_contrast) }}</td>
+                        <td class="fw-bold fs-5" style="color: {{ item.color_hex }};">{{ "%.1f"|format(item.ici_score) }}</td>
+                        <td>
+                            <span class="badge px-3 py-2 text-white" style="background-color: {{ item.color_hex }};">
+                                {{ item.complexity_level }}
+                            </span>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Comparative Graph Figure Embed -->
+    {% if comparison.comparison_graph_filepath %}
+    <div class="glass-card mb-4">
+        <h5 class="card-title-lg mb-3"><i class="fas fa-chart-bar text-primary"></i> Visual Complexity Score Comparison Chart</h5>
+        <div class="text-center">
+            <img src="{{ url_for('serve_file', filename=comparison.comparison_graph_filepath) }}" alt="Comparison Chart" class="img-fluid rounded border">
+        </div>
+    </div>
+    {% endif %}
+    {% endif %}
+</div>
+{% endblock %}

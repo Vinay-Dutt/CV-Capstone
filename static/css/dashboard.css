@@ -1,0 +1,152 @@
+/* ==========================================================================
+   Dashboard, Upload Dropzone & Assessment UI Specific Styling
+   ========================================================================== */
+
+/* File Drag & Drop Zone */
+.dropzone-container {
+    border: 2px dashed var(--glass-border);
+    border-radius: var(--border-radius);
+    padding: 3rem 2rem;
+    text-align: center;
+    background: rgba(99, 102, 241, 0.02);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    position: relative;
+}
+
+.dropzone-container:hover, .dropzone-container.drag-over {
+    border-color: var(--accent-primary);
+    background: rgba(99, 102, 241, 0.08);
+    transform: scale(1.01);
+}
+
+.dropzone-icon {
+    font-size: 3.5rem;
+    color: var(--accent-primary);
+    margin-bottom: 1rem;
+    display: inline-block;
+    transition: transform var(--transition-fast);
+}
+
+.dropzone-container:hover .dropzone-icon {
+    transform: translateY(-6px);
+}
+
+/* Image Preview Cards */
+.image-preview-wrapper {
+    position: relative;
+    border-radius: calc(var(--border-radius) - 4px);
+    overflow: hidden;
+    background: #000;
+    aspect-ratio: 4/3;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.image-preview-wrapper img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    transition: transform 0.3s ease;
+}
+
+.image-preview-wrapper:hover img {
+    transform: scale(1.03);
+}
+
+/* ICI Score Circular Gauge Meter */
+.ici-meter-box {
+    text-align: center;
+    padding: 1.5rem;
+    position: relative;
+}
+
+.meter-score-display {
+    font-size: 3.5rem;
+    font-weight: 800;
+    letter-spacing: -1px;
+    margin-top: 0.5rem;
+    background: var(--accent-gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.complexity-badge-lg {
+    display: inline-block;
+    padding: 0.5rem 1.5rem;
+    font-size: 1.1rem;
+    font-weight: 700;
+    border-radius: 50px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-top: 0.5rem;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+/* Custom Table Styles */
+.custom-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+}
+
+.custom-table th {
+    background: rgba(99, 102, 241, 0.05);
+    color: var(--text-secondary);
+    font-weight: 600;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    padding: 1rem;
+    border-bottom: 2px solid var(--glass-border);
+}
+
+.custom-table td {
+    padding: 1rem;
+    color: var(--text-primary);
+    border-bottom: 1px solid var(--glass-border);
+    vertical-align: middle;
+}
+
+.custom-table tr:hover td {
+    background: rgba(99, 102, 241, 0.03);
+}
+
+/* Ranking Extrema Highlighting */
+.rank-badge-gold {
+    background: linear-gradient(135deg, #f59e0b, #d97706);
+    color: #fff;
+    padding: 0.35rem 0.85rem;
+    border-radius: 30px;
+    font-weight: 700;
+}
+
+.rank-badge-silver {
+    background: linear-gradient(135deg, #94a3b8, #64748b);
+    color: #fff;
+    padding: 0.35rem 0.85rem;
+    border-radius: 30px;
+    font-weight: 700;
+}
+
+/* Side-by-side Before/After Tab Viewers */
+.tab-img-container {
+    max-height: 450px;
+    overflow: hidden;
+    border-radius: var(--border-radius);
+    border: 1px solid var(--glass-border);
+}
+
+.tab-img-container img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+/* Complexity Level Badge Colors */
+.badge.very-low { background-color: #0dcaf0 !important; color: #000 !important; }
+.badge.low { background-color: #10b981 !important; color: #fff !important; }
+.badge.medium { background-color: #f59e0b !important; color: #000 !important; }
+.badge.high { background-color: #ef4444 !important; color: #fff !important; }
+.badge.very-high { background-color: #64748b !important; color: #fff !important; }
