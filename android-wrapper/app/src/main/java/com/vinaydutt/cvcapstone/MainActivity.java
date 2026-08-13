@@ -52,7 +52,7 @@ public class MainActivity extends AppCompatActivity {
         });
         
         // Replace with your Vercel URL
-        myWebView.loadUrl("https://cv-capstone.vercel.app");
+        myWebView.loadUrl("https://cv-capstone-i7cq.vercel.app");
         
         setContentView(myWebView);
     }
