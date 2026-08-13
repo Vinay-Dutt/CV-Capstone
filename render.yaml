@@ -1,0 +1,15 @@
+services:
+  - type: web
+    name: cv-capstone-app
+    env: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn wsgi:app
+    disk:
+      name: cv-data
+      mountPath: /data
+      sizeGB: 1
+    envVars:
+      - key: FLASK_ENV
+        value: production
+      - key: DATA_DIR
+        value: /data
