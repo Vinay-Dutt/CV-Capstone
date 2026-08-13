@@ -3,7 +3,11 @@ import os
 BASE_DIR = os.path.abspath(os.path.dirname(__file__))
 
 # Data directory configuration (defaults to project base directory)
-DATA_DIR = os.environ.get('DATA_DIR', BASE_DIR)
+# If running on Vercel, use /tmp as the data directory since /var/task is read-only
+if os.environ.get('VERCEL'):
+    DATA_DIR = '/tmp'
+else:
+    DATA_DIR = os.environ.get('DATA_DIR', BASE_DIR)
 
 # Folder Directories
 UPLOAD_FOLDER = os.environ.get('UPLOAD_FOLDER', os.path.join(DATA_DIR, 'uploads'))
@@ -47,4 +51,7 @@ COMPLEXITY_LEVELS = [
 
 # Ensure all essential directories exist on startup
 for folder in [UPLOAD_FOLDER, OUTPUT_FOLDER, GRAPH_FOLDER, REPORT_FOLDER, STATIC_SAMPLES_FOLDER]:
-    os.makedirs(folder, exist_ok=True)
+    try:
+        os.makedirs(folder, exist_ok=True)
+    except Exception as e:
+        print(f"Warning: Could not create folder {folder}: {e}")
